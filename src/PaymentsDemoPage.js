@@ -1,0 +1,824 @@
+import React, { useState, useEffect } from 'react';
+import { Box, Typography, Button, Rating, Stack,Divider,Link,Grid,Container } from '@mui/material';
+import { styled } from '@mui/material/styles';
+import { motion, AnimatePresence } from 'framer-motion';
+import '@fortawesome/fontawesome-free/css/all.min.css';
+
+
+import pic from './pictures/PCI.png';
+import logo from './pictures/Layer_1.svg';
+import foodImage from './pictures/foodpic.jpg';
+import foodImage2 from './pictures/foodpic2.jpg';
+import foodImage3 from './pictures/foodpic3.jpg';
+import whitelogo from './pictures/White logo.svg';
+import pci from './pictures/PCI.png';
+
+// Styled Components
+
+const Root = styled(Box)(({ theme }) => ({
+  display: 'flex',
+  flexDirection: 'column',
+  alignItems: 'center',
+  backgroundColor: '#ffffff',
+  color: '#000',
+  height: '100vh',
+  overflowX: 'hidden',
+ 
+}));
+
+const Header = styled(Box)(({ theme }) => ({
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'space-between',
+  flexWrap: 'wrap',
+  width: '100%',
+  padding: theme.spacing(1, 2),
+  boxSizing: 'border-box',
+}));
+
+const CenterNav = styled(Box)(({ theme }) => ({
+  display: 'flex',
+  alignItems: 'center',
+  gap: theme.spacing(3),
+  flex: 1,
+  justifyContent: 'center',
+  [theme.breakpoints.down('md')]: {
+    display: 'none',
+  },
+}));
+
+const SignInButton = styled(Button)(({ theme }) => ({
+  backgroundColor: '#1976d2',
+  color: '#fff',
+  textTransform: 'none',
+  fontWeight: 'bold',
+  '&:hover': {
+    backgroundColor: '#115293',
+  },
+}));
+
+const Logo = styled('img')({
+  height: 40,
+  marginRight: 8,
+  maxWidth: '100%',
+  objectFit: 'contain',
+});
+
+const ProductContainer = styled(Box)(({ theme }) => ({
+  display: 'flex',
+  flexDirection: 'row',
+  alignItems: 'flex-start',
+  justifyContent: 'center',
+  backgroundColor: '#fff',
+  borderRadius: 12,
+  padding: theme.spacing(4),
+  gap: theme.spacing(4),
+  flexWrap: 'wrap',
+  maxWidth: 1000,
+  width: '100%',
+  marginTop:'30px',
+  boxSizing: 'border-box',
+  [theme.breakpoints.down('sm')]: {
+    flexDirection: 'column',
+    alignItems: 'center',    
+  },
+}));
+
+const ImageWrapper = styled(Box)({
+  width: 'auto',
+  height: 'auto',
+  borderRadius: 12,
+  overflow: 'hidden',
+  justifyContent:'center',
+  alignItems:'center',
+});
+
+const MainImage = styled(motion.img)({
+  width: '300px',
+  height: '200px',
+  objectFit: 'cover',
+  borderRadius: 12,
+  '@media (max-width: 360px)': {
+    width: '230px',
+    height: '150px',
+  },
+});
+
+const StyledFooter = styled(Box)(({ theme }) => ({
+  backgroundColor: '#0d1b2a',
+  color: '#fff',
+  padding: theme.spacing(6, 2, 2),
+  marginTop: theme.spacing(10),
+  width: '100%',
+  flex: 1,
+  boxSizing: 'border-box',
+}));
+
+const FooterTop = styled(Box)(({ theme }) => ({
+  display: 'flex',
+  flexDirection: 'column',
+  gap: theme.spacing(6),
+}));
+
+const FooterIntro = styled(Box)(({ theme }) => ({
+  width: '100%',
+}));
+
+const FooterLinks = styled(Box)(({ theme }) => ({
+  display: 'flex',
+  flexWrap: 'wrap',
+  justifyContent: 'center',
+  gap: theme.spacing(4),
+  width: '100%',
+}));
+
+const FooterColumn = styled(Box)(({ theme }) => ({
+  display: 'flex',
+  flexDirection: 'column',
+  gap: theme.spacing(1),
+  minWidth: 140,
+  flexGrow: 1,
+  flexBasis: '0',
+}));
+
+const FooterHeading = styled(Typography)(({ theme }) => ({
+  fontWeight: 600,
+  marginBottom: theme.spacing(1),
+  color: '#ffffff',
+}));
+
+const FooterItem = styled(Typography)(({ theme }) => ({
+  fontSize: 14,
+  color: '#cfd8dc',
+  cursor: 'pointer',
+  '&:hover': {
+    color: '#ffffff',
+    textDecoration: 'underline',
+  },
+}));
+
+const BottomBar = styled(Box)(({ theme }) => ({
+  display: 'flex',
+  justifyContent: 'space-between',
+  alignItems: 'center',
+  backgroundColor: '#1b263b',
+  borderRadius: 12,
+  padding: theme.spacing(2, 4),
+  marginTop: theme.spacing(6),
+  flexWrap: 'wrap',
+  boxSizing: 'border-box',
+}));
+
+const SocialIcon = styled('i')({
+  color: '#fff',
+  fontSize: 18,
+  backgroundColor: '#334155',
+  padding: 8,
+  borderRadius: '50%',
+  cursor: 'pointer',
+  transition: 'background 0.3s',
+  '&:hover': {
+    backgroundColor: '#1976d2',
+  },
+});
+
+// Main Component
+
+export default function PaymentDemo() {
+  const images = [foodImage, foodImage2, foodImage3];
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentImageIndex((prevIndex) => (prevIndex + 1) % images.length);
+    }, 15000);
+    return () => clearInterval(interval);
+  }, [images.length]);
+
+  return (
+    <Root>
+      <Header>
+        <Box display="flex" alignItems="center">
+          <Logo src={logo} alt="Logo" />
+        </Box>
+
+        <CenterNav>
+          {['Payments', 'Banking', 'Payroll', 'Engage', 'Partners', 'Resources', 'Pricing'].map((item) => (
+            <Typography
+              key={item}
+              variant="body1"
+              sx={{ cursor: 'pointer', fontWeight: 500, '&:hover': { color: '#1976d2' } }}
+            >
+              {item}
+            </Typography>
+          ))}
+        </CenterNav>
+
+        <SignInButton variant="contained">Sign In</SignInButton>
+      </Header>
+
+      <ProductContainer>
+        <Box display="flex" flexDirection="column" alignItems="center">
+          <ImageWrapper>
+            <AnimatePresence mode="wait">
+              <MainImage
+                key={currentImageIndex}
+                src={images[currentImageIndex]}
+                alt="Product"
+                initial={{ opacity: 0, x: 100 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -100 }}
+                transition={{ duration: 0.5 }}
+              />
+            </AnimatePresence>
+          </ImageWrapper>
+
+          <Stack direction="row" spacing={1} mt={2}>
+            {images.map((_, index) => (
+              <Box
+                key={index}
+                role="button"
+                tabIndex={0}
+                aria-label={`Show image ${index + 1}`}
+                onClick={() => setCurrentImageIndex(index)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    setCurrentImageIndex(index);
+                  }
+                }}
+                sx={{
+                  width: 9,
+                  height: 9,
+                  borderRadius: '50%',
+                  backgroundColor: index === currentImageIndex ? '#1976d2' : '#90caf9',
+                  cursor: 'pointer',
+                }}
+              />
+            ))}
+          </Stack>
+        </Box>
+
+        <Box flex={1} minWidth={300} display="flex" flexDirection="column">
+          <Typography variant="h5" fontWeight="bold">Delicious Meal</Typography>
+          <Rating value={4} readOnly />
+          <Typography variant="h6" sx={{ mt: 2 }}>₹1.00</Typography>
+          <Typography fontSize={14} mt={3}>
+            PBpay offers a seamless, secure payment experience with multiple options including Credit/Debit Cards, UPI, Net Banking, and more. Our smooth checkout ensures quick payments and instant confirmations.
+          </Typography>
+          <Button
+            variant="contained"
+            size="large"
+            alignSelf="centre"
+            sx={{
+              alignSelf: 'flex-start',
+              mt: 4,
+              '&:hover': { backgroundColor: '#115293' },
+            }}
+          >
+            PAY WITH PBPAY
+          </Button>
+        </Box>
+      </ProductContainer>
+
+      {/* <StyledFooter>
+        <FooterTop>
+          <FooterIntro>
+            <Box display="flex" justifyContent="space-between" alignItems="flex-start" flexWrap="wrap">
+              <Box flexShrink={0}>
+                <img src={logo} alt="logo" style={{ height: 50, marginTop: 4 }} />
+              </Box>
+              <Typography
+                variant="body2"
+                sx={{
+                  color: '#cfd8dc',
+                  fontSize: '12px',
+                  lineHeight: 1.6,
+                  maxWidth: '660px',
+                  textAlign: 'left',
+                  paddingRight:'5px',
+                }}
+              >
+                India’s most comprehensive payment gateway that simplifies & enhances business payments. Our platform ensures your customers always experience a seamless & secure transaction through our easy integrations, real-time analytics & cutting-edge fraud protection. We support all payment modes - credit cards, debit cards, net banking, UPI & more.
+              </Typography>
+            </Box>
+          </FooterIntro>
+
+          <FooterLinks>
+            {[
+              { heading: 'Accept payments', items: ['Credit card', 'Debit card', 'UPI/UPI-QR', 'Netbanking'] },
+              { heading: 'Manage payments', items: ['Real time analytics', 'Reconciliation support'] },
+              { heading: 'Affordability stack', items: ['EMI', 'Buy now pay later'] },
+              { heading: 'Company', items: ['About Us', 'Contact Us', 'Blog', 'Careers'] },
+              {
+                heading: 'Legal',
+                items: ['Grievance redressal', 'Refund policy', 'Privacy policy', 'Terms of service'],
+              },
+            ].map(({ heading, items }) => (
+              <FooterColumn key={heading}>
+                <FooterHeading>{heading}</FooterHeading>
+                {items.map(item => <FooterItem key={item}>{item}</FooterItem>)}
+              </FooterColumn>
+            ))}
+          </FooterLinks>
+        </FooterTop>
+
+        <BottomBar>
+          <Box display="flex" alignItems="center" gap={2}>
+            <Typography variant="body2">Secured with</Typography>
+            <img
+            sx={{
+              mb:'20px',
+            }}
+              src={pic}
+              alt="PCI"
+              height={30}
+            />
+          </Box>
+
+          <Box display="flex" alignItems="center" gap={2}>
+            <Typography variant="body2">Follow us on</Typography>
+            <SocialIcon className="fab fa-linkedin-in" />
+            <SocialIcon className="fab fa-x-twitter" />
+            <SocialIcon className="fab fa-facebook-f" />
+          </Box>
+        </BottomBar>
+
+        <Typography variant="caption" align="center" sx={{ color: '#90a4ae', mt: 2 }}>
+          © Copyright 2008-2025 PBPay.com. All Rights Reserved.
+        </Typography>
+      </StyledFooter> */}
+
+<Box
+    component="footer"
+    sx={{
+      bgcolor: '#0a1a36',
+      color: '#fff',
+      pt: 0,
+      pb: 3,
+      mt: 4,
+      // position: 'relative',
+      width: '100vw',
+      left: '50%',
+      right: '50%',
+      marginLeft: '-50vw',
+      marginRight: '-50vw',
+    }}
+  >
+    <Box sx={{ width: '100vw', height: '12px', overflow: 'hidden', zIndex:"999", background:"white", border:"none", position: 'relative', left: '50%', right: '50%', marginLeft: '-50vw', marginRight: '-50vw'}}>
+      <svg width="100%" height="15" viewBox="0 0 1280 12" fill="none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+<path d="M350.931 4.83394C349.262 6.97638 348.124 8.28697 345.855 8.28697C343.585 8.28697 342.447 6.97638 340.778 4.83394C339.121 2.70946 337.062 0.0703125 333.041 0.0703125C329.021 0.0703125 326.961 2.70946 325.304 4.83394C323.636 6.97638 322.498 8.28697 320.228 8.28697C317.958 8.28697 316.82 6.97638 315.152 4.83394C313.495 2.70946 311.435 0.0703125 307.415 0.0703125C303.394 0.0703125 301.335 2.70946 299.678 4.83394C298.009 6.97638 296.871 8.28697 294.601 8.28697C292.332 8.28697 291.194 6.97638 289.525 4.83394C287.868 2.70946 285.814 0.0703125 281.788 0.0703125C277.762 0.0703125 275.708 2.70946 274.051 4.83394C272.382 6.97638 271.244 8.28697 268.975 8.28697C266.705 8.28697 265.567 6.97638 263.898 4.83394C262.241 2.70946 260.187 0.0703125 256.161 0.0703125C252.135 0.0703125 250.081 2.70946 248.424 4.83394C246.756 6.97638 245.618 8.28697 243.348 8.28697C241.078 8.28697 239.941 6.97638 238.272 4.83394C236.615 2.70946 234.561 0.0703125 230.535 0.0703125C226.509 0.0703125 224.455 2.70946 222.798 4.83394C221.129 6.97638 219.991 8.28697 217.721 8.28697C215.452 8.28697 214.314 6.97638 212.645 4.83394C210.988 2.70946 208.934 0.0703125 204.908 0.0703125C200.882 0.0703125 198.828 2.70946 197.171 4.83394C195.502 6.97638 194.365 8.28697 192.095 8.28697C189.825 8.28697 188.687 6.97638 187.018 4.83394C185.361 2.70946 183.302 0.0703125 179.281 0.0703125C175.261 0.0703125 173.202 2.70946 171.544 4.83394C169.876 6.97638 168.738 8.28697 166.468 8.28697C164.198 8.28697 163.061 6.97638 161.392 4.83394C159.735 2.70946 157.675 0.0703125 153.655 0.0703125C149.635 0.0703125 147.575 2.70946 145.918 4.83394C144.249 6.97638 143.111 8.28697 140.841 8.28697C138.572 8.28697 137.434 6.97638 135.765 4.83394C134.108 2.70946 132.054 0.0703125 128.028 0.0703125C124.002 0.0703125 121.948 2.70946 120.291 4.83394C118.622 6.97638 117.485 8.28697 115.215 8.28697C112.945 8.28697 111.807 6.97638 110.139 4.83394C108.481 2.70946 106.428 0.0703125 102.402 0.0703125C98.3755 0.0703125 96.3216 2.70946 94.6645 4.83394C92.9958 6.97638 91.858 8.28697 89.5882 8.28697C87.3185 8.28697 86.1807 6.97638 84.5119 4.83394C82.8548 2.70946 80.8009 0.0703125 76.7749 0.0703125C72.7489 0.0703125 70.695 2.70946 69.0379 4.83394C67.3691 6.97638 66.2313 8.28697 63.9616 8.28697C61.6918 8.28697 60.554 6.97638 58.8911 4.83394C57.234 2.70946 55.1801 0.0703125 51.1541 0.0703125C47.128 0.0703125 45.0742 2.70946 43.4171 4.83394C41.7483 6.97638 40.6105 8.28697 38.3408 8.28697C36.071 8.28697 34.9332 6.97638 33.2703 4.83394C31.6132 2.70946 29.5593 0.0703125 25.5333 0.0703125C21.5072 0.0703125 19.4534 2.70946 17.7963 4.83394C16.1275 6.97638 14.9897 8.28697 12.72 8.28697C10.4502 8.28697 9.31241 6.97638 7.64365 4.83394C6.07991 2.70946 4.02021 0.0703125 0 0.0703125V11.7819H358.668V0.0703125C354.648 0.0703125 352.588 2.70946 350.931 4.83394Z" fill="#091A38"/>
+<path d="M453.087 4.83394C451.418 6.97638 450.28 8.28697 448.01 8.28697C445.741 8.28697 444.603 6.97638 442.934 4.83394C441.277 2.70946 439.217 0.0703125 435.197 0.0703125C431.177 0.0703125 429.117 2.70946 427.46 4.83394C425.791 6.97638 424.654 8.28697 422.384 8.28697C420.114 8.28697 418.976 6.97638 417.308 4.83394C415.65 2.70946 413.591 0.0703125 409.571 0.0703125C405.55 0.0703125 403.491 2.70946 401.834 4.83394C400.165 6.97638 399.027 8.28697 396.757 8.28697C394.487 8.28697 393.35 6.97638 391.681 4.83394C390.024 2.70946 387.97 0.0703125 383.944 0.0703125C379.918 0.0703125 377.864 2.70946 376.207 4.83394C374.538 6.97638 373.4 8.28697 371.131 8.28697C368.861 8.28697 367.723 6.97638 366.054 4.83394C364.397 2.70946 362.343 0.0703125 358.317 0.0703125C354.291 0.0703125 352.237 2.70946 350.58 4.83394C348.912 6.97638 347.774 8.28697 345.504 8.28697C343.234 8.28697 342.096 6.97638 340.428 4.83394C338.771 2.70946 336.717 0.0703125 332.691 0.0703125C328.665 0.0703125 326.611 2.70946 324.954 4.83394C323.285 6.97638 322.147 8.28697 319.877 8.28697C317.608 8.28697 316.47 6.97638 314.801 4.83394C313.144 2.70946 311.084 0.0703125 307.064 0.0703125C303.044 0.0703125 300.984 2.70946 299.327 4.83394C297.658 6.97638 296.52 8.28697 294.251 8.28697C291.981 8.28697 290.843 6.97638 289.174 4.83394C287.517 2.70946 285.463 0.0703125 281.437 0.0703125C277.411 0.0703125 275.357 2.70946 273.7 4.83394C272.032 6.97638 270.894 8.28697 268.624 8.28697C266.354 8.28697 265.216 6.97638 263.548 4.83394C261.891 2.70946 259.837 0.0703125 255.811 0.0703125C251.785 0.0703125 249.731 2.70946 248.074 4.83394C246.405 6.97638 245.267 8.28697 242.997 8.28697C240.728 8.28697 239.59 6.97638 237.921 4.83394C236.264 2.70946 234.21 0.0703125 230.184 0.0703125C226.158 0.0703125 224.104 2.70946 222.447 4.83394C220.778 6.97638 219.641 8.28697 217.371 8.28697C215.101 8.28697 213.963 6.97638 212.294 4.83394C210.637 2.70946 208.583 0.0703125 204.557 0.0703125C200.531 0.0703125 198.478 2.70946 196.82 4.83394C195.152 6.97638 194.014 8.28697 191.744 8.28697C189.474 8.28697 188.337 6.97638 186.668 4.83394C185.011 2.70946 182.951 0.0703125 178.931 0.0703125C174.911 0.0703125 172.851 2.70946 171.194 4.83394C169.525 6.97638 168.387 8.28697 166.117 8.28697C163.848 8.28697 162.71 6.97638 161.047 4.83394C159.39 2.70946 157.336 0.0703125 153.316 0.0703125C149.296 0.0703125 147.236 2.70946 145.579 4.83394C143.91 6.97638 142.772 8.28697 140.502 8.28697C138.233 8.28697 137.095 6.97638 135.432 4.83394C133.775 2.70946 131.721 0.0703125 127.695 0.0703125C123.669 0.0703125 121.615 2.70946 119.958 4.83394C118.289 6.97638 117.151 8.28697 114.882 8.28697C112.612 8.28697 111.474 6.97638 110.139 4.83394C108.481 2.70946 106.428 0.0703125 102.402 0.0703125V11.7819H460.824V0.0703125C456.804 0.0703125 454.744 2.70946 453.087 4.83394Z" fill="#091A38"/>
+<path d="M811.884 4.83394C810.215 6.97638 809.077 8.28697 806.808 8.28697C804.538 8.28697 803.4 6.97638 801.731 4.83394C800.074 2.70946 798.015 0.0703125 793.994 0.0703125C789.974 0.0703125 787.915 2.70946 786.257 4.83394C784.589 6.97638 783.451 8.28697 781.181 8.28697C778.911 8.28697 777.774 6.97638 776.105 4.83394C774.448 2.70946 772.388 0.0703125 768.368 0.0703125C764.348 0.0703125 762.288 2.70946 760.631 4.83394C758.962 6.97638 757.824 8.28697 755.554 8.28697C753.285 8.28697 752.147 6.97638 750.478 4.83394C748.821 2.70946 746.767 0.0703125 742.741 0.0703125C738.715 0.0703125 736.661 2.70946 735.004 4.83394C733.335 6.97638 732.198 8.28697 729.928 8.28697C727.658 8.28697 726.52 6.97638 724.852 4.83394C723.194 2.70946 721.141 0.0703125 717.115 0.0703125C713.088 0.0703125 711.035 2.70946 709.378 4.83394C707.709 6.97638 706.571 8.28697 704.301 8.28697C702.031 8.28697 700.894 6.97638 699.225 4.83394C697.568 2.70946 695.514 0.0703125 691.488 0.0703125C687.462 0.0703125 685.408 2.70946 683.751 4.83394C682.082 6.97638 680.944 8.28697 678.675 8.28697C676.405 8.28697 675.267 6.97638 673.598 4.83394C671.941 2.70946 669.887 0.0703125 665.861 0.0703125C661.835 0.0703125 659.781 2.70946 658.124 4.83394C656.455 6.97638 655.318 8.28697 653.048 8.28697C650.778 8.28697 649.64 6.97638 647.972 4.83394C646.314 2.70946 644.255 0.0703125 640.235 0.0703125C636.214 0.0703125 634.155 2.70946 632.498 4.83394C630.829 6.97638 629.691 8.28697 627.421 8.28697C625.152 8.28697 624.014 6.97638 622.345 4.83394C620.688 2.70946 618.628 0.0703125 614.608 0.0703125C610.588 0.0703125 608.528 2.70946 606.871 4.83394C605.202 6.97638 604.064 8.28697 601.795 8.28697C599.525 8.28697 598.387 6.97638 596.718 4.83394C595.061 2.70946 593.007 0.0703125 588.981 0.0703125C584.955 0.0703125 582.901 2.70946 581.244 4.83394C579.576 6.97638 578.438 8.28697 576.168 8.28697C573.898 8.28697 572.76 6.97638 571.092 4.83394C569.435 2.70946 567.381 0.0703125 563.355 0.0703125C559.329 0.0703125 557.275 2.70946 555.618 4.83394C553.949 6.97638 552.811 8.28697 550.541 8.28697C548.272 8.28697 547.134 6.97638 545.465 4.83394C543.808 2.70946 541.754 0.0703125 537.728 0.0703125C533.702 0.0703125 531.648 2.70946 529.991 4.83394C528.322 6.97638 527.184 8.28697 524.915 8.28697C522.645 8.28697 521.507 6.97638 519.844 4.83394C518.187 2.70946 516.133 0.0703125 512.107 0.0703125C508.081 0.0703125 506.027 2.70946 504.37 4.83394C502.701 6.97638 501.564 8.28697 499.294 8.28697C497.024 8.28697 495.886 6.97638 494.223 4.83394C492.566 2.70946 490.512 0.0703125 486.486 0.0703125C482.46 0.0703125 480.406 2.70946 478.749 4.83394C477.081 6.97638 475.943 8.28697 473.673 8.28697C471.403 8.28697 470.266 6.97638 468.597 4.83394C467.033 2.70946 464.973 0.0703125 460.953 0.0703125V11.7819H819.621V0.0703125C815.601 0.0703125 813.541 2.70946 811.884 4.83394Z" fill="#091A38"/>
+<path d="M914.042 4.83394C912.373 6.97638 911.235 8.28697 908.966 8.28697C906.696 8.28697 905.558 6.97638 903.889 4.83394C902.232 2.70946 900.172 0.0703125 896.152 0.0703125C892.132 0.0703125 890.072 2.70946 888.415 4.83394C886.746 6.97638 885.609 8.28697 883.339 8.28697C881.069 8.28697 879.931 6.97638 878.263 4.83394C876.606 2.70946 874.546 0.0703125 870.526 0.0703125C866.505 0.0703125 864.446 2.70946 862.789 4.83394C861.12 6.97638 859.982 8.28697 857.712 8.28697C855.443 8.28697 854.305 6.97638 852.636 4.83394C850.979 2.70946 848.925 0.0703125 844.899 0.0703125C840.873 0.0703125 838.819 2.70946 837.162 4.83394C835.493 6.97638 834.355 8.28697 832.086 8.28697C829.816 8.28697 828.678 6.97638 827.009 4.83394C825.352 2.70946 823.298 0.0703125 819.272 0.0703125C815.246 0.0703125 813.192 2.70946 811.535 4.83394C809.867 6.97638 808.729 8.28697 806.459 8.28697C804.189 8.28697 803.051 6.97638 801.383 4.83394C799.726 2.70946 797.672 0.0703125 793.646 0.0703125C789.62 0.0703125 787.566 2.70946 785.909 4.83394C784.24 6.97638 783.102 8.28697 780.832 8.28697C778.563 8.28697 777.425 6.97638 775.756 4.83394C774.099 2.70946 772.039 0.0703125 768.019 0.0703125C763.999 0.0703125 761.939 2.70946 760.282 4.83394C758.613 6.97638 757.475 8.28697 755.206 8.28697C752.936 8.28697 751.798 6.97638 750.129 4.83394C748.472 2.70946 746.418 0.0703125 742.392 0.0703125C738.366 0.0703125 736.312 2.70946 734.655 4.83394C732.987 6.97638 731.849 8.28697 729.579 8.28697C727.309 8.28697 726.172 6.97638 724.503 4.83394C722.846 2.70946 720.792 0.0703125 716.766 0.0703125C712.74 0.0703125 710.686 2.70946 709.029 4.83394C707.36 6.97638 706.222 8.28697 703.952 8.28697C701.683 8.28697 700.545 6.97638 698.876 4.83394C697.219 2.70946 695.165 0.0703125 691.139 0.0703125C687.113 0.0703125 685.059 2.70946 683.402 4.83394C681.733 6.97638 680.596 8.28697 678.326 8.28697C676.056 8.28697 674.918 6.97638 673.25 4.83394C671.592 2.70946 669.539 0.0703125 665.512 0.0703125C661.486 0.0703125 659.433 2.70946 657.775 4.83394C656.107 6.97638 654.969 8.28697 652.699 8.28697C650.429 8.28697 649.292 6.97638 647.623 4.83394C645.966 2.70946 643.906 0.0703125 639.886 0.0703125C635.866 0.0703125 633.806 2.70946 632.149 4.83394C630.48 6.97638 629.342 8.28697 627.073 8.28697C624.803 8.28697 623.665 6.97638 622.002 4.83394C620.345 2.70946 618.291 0.0703125 614.271 0.0703125C610.251 0.0703125 608.191 2.70946 606.534 4.83394C604.865 6.97638 603.727 8.28697 601.458 8.28697C599.188 8.28697 598.05 6.97638 596.387 4.83394C594.73 2.70946 592.676 0.0703125 588.65 0.0703125C584.624 0.0703125 582.57 2.70946 580.913 4.83394C579.244 6.97638 578.107 8.28697 575.837 8.28697C573.567 8.28697 572.429 6.97638 570.76 4.83394C569.103 2.70946 567.044 0.0703125 563.023 0.0703125V11.7819H921.779V0.0703125C917.759 0.0703125 915.699 2.70946 914.042 4.83394Z" fill="#091A38"/>
+<path d="M1272.26 4.83394C1270.6 6.97638 1269.46 8.28697 1267.19 8.28697C1264.92 8.28697 1263.78 6.97638 1262.11 4.83394C1260.45 2.70946 1258.4 0.0703125 1254.37 0.0703125C1250.35 0.0703125 1248.29 2.70946 1246.64 4.83394C1244.97 6.97638 1243.83 8.28697 1241.56 8.28697C1239.29 8.28697 1238.15 6.97638 1236.49 4.83394C1234.83 2.70946 1232.77 0.0703125 1228.75 0.0703125C1224.73 0.0703125 1222.67 2.70946 1221.01 4.83394C1219.34 6.97638 1218.2 8.28697 1215.93 8.28697C1213.67 8.28697 1212.53 6.97638 1210.86 4.83394C1209.2 2.70946 1207.15 0.0703125 1203.12 0.0703125C1199.1 0.0703125 1197.04 2.70946 1195.38 4.83394C1193.72 6.97638 1192.58 8.28697 1190.31 8.28697C1188.04 8.28697 1186.9 6.97638 1185.23 4.83394C1183.57 2.70946 1181.52 0.0703125 1177.49 0.0703125C1173.47 0.0703125 1171.42 2.70946 1169.76 4.83394C1168.09 6.97638 1166.95 8.28697 1164.68 8.28697C1162.41 8.28697 1161.27 6.97638 1159.61 4.83394C1157.95 2.70946 1155.89 0.0703125 1151.87 0.0703125C1147.84 0.0703125 1145.79 2.70946 1144.13 4.83394C1142.46 6.97638 1141.32 8.28697 1139.06 8.28697C1136.79 8.28697 1135.65 6.97638 1133.98 4.83394C1132.32 2.70946 1130.26 0.0703125 1126.24 0.0703125C1122.22 0.0703125 1120.16 2.70946 1118.5 4.83394C1116.84 6.97638 1115.7 8.28697 1113.43 8.28697C1111.16 8.28697 1110.02 6.97638 1108.35 4.83394C1106.69 2.70946 1104.64 0.0703125 1100.62 0.0703125C1096.59 0.0703125 1094.54 2.70946 1092.88 4.83394C1091.21 6.97638 1090.07 8.28697 1087.8 8.28697C1085.53 8.28697 1084.39 6.97638 1082.73 4.83394C1081.07 2.70946 1079.01 0.0703125 1074.99 0.0703125C1070.96 0.0703125 1068.91 2.70946 1067.25 4.83394C1065.58 6.97638 1064.44 8.28697 1062.18 8.28697C1059.91 8.28697 1058.77 6.97638 1057.1 4.83394C1055.44 2.70946 1053.39 0.0703125 1049.36 0.0703125C1045.34 0.0703125 1043.28 2.70946 1041.62 4.83394C1039.96 6.97638 1038.82 8.28697 1036.55 8.28697C1034.28 8.28697 1033.14 6.97638 1031.47 4.83394C1029.82 2.70946 1027.76 0.0703125 1023.74 0.0703125C1019.71 0.0703125 1017.66 2.70946 1016 4.83394C1014.33 6.97638 1013.19 8.28697 1010.92 8.28697C1008.65 8.28697 1007.51 6.97638 1005.85 4.83394C1004.19 2.70946 1002.13 0.0703125 998.109 0.0703125C994.088 0.0703125 992.029 2.70946 990.372 4.83394C988.703 6.97638 987.565 8.28697 985.295 8.28697C983.025 8.28697 981.888 6.97638 980.225 4.83394C978.568 2.70946 976.514 0.0703125 972.494 0.0703125C968.473 0.0703125 966.414 2.70946 964.757 4.83394C963.088 6.97638 961.95 8.28697 959.68 8.28697C957.41 8.28697 956.273 6.97638 954.61 4.83394C952.953 2.70946 950.899 0.0703125 946.873 0.0703125C942.847 0.0703125 940.793 2.70946 939.136 4.83394C937.467 6.97638 936.329 8.28697 934.059 8.28697C931.79 8.28697 930.652 6.97638 928.983 4.83394C927.326 2.70946 925.266 0.0703125 921.246 0.0703125V11.7819H1280V0.0703125C1275.98 0.0703125 1273.92 2.70946 1272.26 4.83394Z" fill="#091A38"/>
+</svg>
+
+        </Box>
+    <Container maxWidth="lg">
+      <Box sx={{ mb: 3, pt: 2, mt:7 }}>
+        <Box sx={{ 
+          mb: 3, 
+          flexShrink: 0, 
+          display: 'flex', 
+          flexDirection: { xs: 'column', md: 'row' },
+          justifyContent: { xs: 'center', md: 'space-between' },
+          alignItems: { xs: 'center', md: 'flex-start' },
+          gap: { xs: 2, md: 4 }
+        }}>
+          <img
+            src={whitelogo}
+            alt="PB Pay Logo"
+            style={{ height: '40px' }}
+          />
+          <Box sx={{ 
+            textAlign: { xs: 'center', md: 'left' },
+            maxWidth: { xs: '100%', md: '835px' }
+          }}>
+            <Typography
+              variant="body2"
+              sx={{
+                color: '#b0bec5',
+                lineHeight: 1.7,
+                fontSize:{xs:"14px", md:'16px'},
+              }}
+            >
+              India's most comprehensive payment gateway that simplifies &
+              enhances business payments. Our platform ensures your customers
+              always experience a seamless & secure transaction through our
+              easy integrations, real-time analytics & cutting-edge fraud
+              protection. We support all payment modes - credit cards, debit
+              cards, net banking, UPI & more.
+            </Typography>
+          </Box>
+        </Box>
+      </Box>
+      <Divider sx={{ bgcolor: 'rgba(255, 255, 255, 0.1)', my: 3 }} />
+      <Grid
+        container
+        spacing={2}
+        sx={{
+          mb: 3,
+          display: 'grid',
+          gridTemplateColumns: {
+            xs: 'repeat(2, 1fr)',
+            sm: 'repeat(3, 1fr)',
+            md: 'repeat(5, 1fr)',
+          },
+          gap: { xs: 2, md: 0 },
+        }}
+      >
+        <Grid item>
+          <Typography
+            variant="subtitle1"
+            fontWeight={600}
+            sx={{ mb: 1.5, color: '#fff' }}
+          >
+            Accept payments
+          </Typography>
+          <Link
+            href="#"
+            color="inherit"
+            display="block"
+            sx={{
+              mb: 0.75,
+              '&:hover': { color: '#fff' },
+              textDecoration: 'none',
+              fontWeight: '400',
+            }}
+          >
+            Credit card
+          </Link>
+          <Link
+            href="#"
+            color="inherit"
+            display="block"
+            sx={{
+              mb: 0.75,
+              '&:hover': { color: '#fff' },
+              textDecoration: 'none',
+              fontWeight: '400',
+            }}
+          >
+            Debit card
+          </Link>
+          <Link
+            href="#"
+            color="inherit"
+            display="block"
+            sx={{
+              mb: 0.75,
+              '&:hover': { color: '#fff' },
+              textDecoration: 'none',
+              fontWeight: '400',
+            }}
+          >
+            UPI/UPI-QR
+          </Link>
+          <Link
+            href="#"
+            color="inherit"
+            display="block"
+            sx={{
+              mb: 0.75,
+              '&:hover': { color: '#fff' },
+              textDecoration: 'none',
+              fontWeight: '400',
+            }}
+          >
+            Netbanking
+          </Link>
+        </Grid>
+        <Grid item>
+          <Typography
+            variant="subtitle1"
+            fontWeight={600}
+            sx={{ mb: 1.5, color: '#fff' }}
+          >
+            Manage payments
+          </Typography>
+          <Link
+            href="#"
+            color="inherit"
+            display="block"
+            sx={{
+              mb: 0.75,
+              '&:hover': { color: '#fff' },
+              textDecoration: 'none',
+              fontWeight: '400',
+            }}
+          >
+            Real time analytics
+          </Link>
+          <Link
+            href="#"
+            color="inherit"
+            display="block"
+            sx={{
+              mb: 0.75,
+              '&:hover': { color: '#fff' },
+              textDecoration: 'none',
+              fontWeight: '400',
+            }}
+          >
+            Reconciliation support
+          </Link>
+        </Grid>
+        <Grid item>
+          <Typography
+            variant="subtitle1"
+            fontWeight={600}
+            sx={{ mb: 1.5, color: '#fff' }}
+          >
+            Affordability stack
+          </Typography>
+          <Link
+            href="#"
+            color="inherit"
+            display="block"
+            variant="body2"
+            sx={{
+              mb: 0.75,
+              '&:hover': { color: '#fff' },
+              textDecoration: 'none',
+              fontWeight: '400',
+            }}
+          >
+            EMI
+          </Link>
+          <Link
+            href="#"
+            color="inherit"
+            display="block"
+            variant="body2"
+            sx={{
+              mb: 0.75,
+              '&:hover': { color: '#fff' },
+              textDecoration: 'none',
+              fontWeight: '400',
+            }}
+          >
+            Buy now pay later
+          </Link>
+        </Grid>
+        <Grid item>
+          <Typography
+            variant="subtitle1"
+            fontWeight={600}
+            sx={{ mb: 1.5, color: '#fff' }}
+          >
+            Company
+          </Typography>
+          <Link
+            href="#"
+            color="inherit"
+            display="block"
+            variant="body2"
+            sx={{
+              mb: 0.75,
+              '&:hover': { color: '#fff' },
+              textDecoration: 'none',
+              fontWeight: '400',
+            }}
+          >
+            About Us
+          </Link>
+          <Link
+            href="#"
+            color="inherit"
+            display="block"
+            variant="body2"
+            sx={{
+              mb: 0.75,
+              '&:hover': { color: '#fff' },
+              textDecoration: 'none',
+              fontWeight: '400',
+            }}
+          >
+            Contact Us
+          </Link>
+          <Link
+            href="#"
+            color="inherit"
+            display="block"
+            variant="body2"
+            sx={{
+              mb: 0.75,
+              '&:hover': { color: '#fff' },
+              textDecoration: 'none',
+              fontWeight: '400',
+            }}
+          >
+            Blog
+          </Link>
+          <Link
+            href="#"
+            color="inherit"
+            display="block"
+            variant="body2"
+            sx={{
+              mb: 0.75,
+              '&:hover': { color: '#fff' },
+              textDecoration: 'none',
+              fontWeight: '400',
+            }}
+          >
+            Careers
+          </Link>
+        </Grid>
+        <Grid item sx={{ gridColumn: { xs: '1 / span 2', sm: 'auto' } }}>
+          <Typography
+            variant="subtitle1"
+            fontWeight={600}
+            sx={{ mb: 1.5, color: '#fff' }}
+          >
+            Legal
+          </Typography>
+          <Link
+            href="#"
+            color="inherit"
+            display="block"
+            variant="body2"
+            sx={{
+              mb: 0.75,
+              '&:hover': { color: '#fff' },
+              fontWeight: '400',
+              textDecoration: 'none',
+            }}
+          >
+            Grievance redressal
+          </Link>
+          <Link
+            href="#"
+            color="inherit"
+            display="block"
+            variant="body2"
+            sx={{
+              mb: 0.75,
+              '&:hover': { color: '#fff' },
+              fontWeight: '400',
+              textDecoration: 'none',
+            }}
+          >
+            Zero-Tolerance compliance
+          </Link>
+          <Link
+            href="#"
+            color="inherit"
+            display="block"
+            variant="body2"
+            sx={{
+              mb: 0.75,
+              '&:hover': { color: '#fff' },
+              fontWeight: '400',
+              textDecoration: 'none',
+            }}
+          >
+            Refund policy
+          </Link>
+          <Link
+            href="#"
+            color="inherit"
+            display="block"
+            variant="body2"
+            sx={{
+              mb: 0.75,
+              '&:hover': { color: '#fff' },
+              fontWeight: '400',
+              textDecoration: 'none',
+            }}
+          >
+            Merchant onboarding policy
+          </Link>
+          <Link
+            href="#"
+            color="inherit"
+            display="block"
+            variant="body2"
+            sx={{
+              mb: 0.75,
+              '&:hover': { color: '#fff' },
+              fontWeight: '400',
+              textDecoration: 'none',
+            }}
+          >
+            Merchant risk policy
+          </Link>
+          <Link
+            href="#"
+            color="inherit"
+            display="block"
+            variant="body2"
+            sx={{
+              mb: 0.75,
+              '&:hover': { color: '#fff' },
+              fontWeight: '400',
+              textDecoration: 'none',
+            }}
+          >
+            Terms of service
+          </Link>
+          <Link
+            href="#"
+            color="inherit"
+            display="block"
+            variant="body2"
+            sx={{
+              mb: 0.75,
+              '&:hover': { color: '#fff' },
+              fontWeight: '400',
+              textDecoration: 'none',
+            }}
+          >
+            Privacy policy
+          </Link>
+        </Grid>
+      </Grid>
+      <Box
+        sx={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: { xs: 'center', sm: 'center' },
+          flexWrap: 'wrap',
+          bgcolor: '#122039',
+          p: '10px 20px',
+          borderRadius: '8px',
+          mt: 3,
+          mb: 3,
+          flexDirection: { xs: 'row', sm: 'row' },
+          gap: { xs: 2, sm: 0 },
+          textAlign: { xs: 'center', sm: 'left' },
+        }}
+      >
+        <Box sx={{ display: 'flex', flexDirection: {xs:'column', md:"row"}, alignItems: { xs: 'center', sm:'left' } }}>
+          <Typography
+            variant="body2"
+            sx={{ mb: { xs: 1, sm: 0 }, color: '#b0bec5', fontSize: '0.875rem' }}
+          >
+            Secured with
+          </Typography>
+          <img
+            src={pci}
+            alt="PCI DSS Compliant"
+            style={{ height: '28px', verticalAlign: 'middle', marginLeft:"14px" }}
+          />
+        </Box>
+        <Box sx={{ display: 'flex', flexDirection: {xs:'column', md:"row"}, alignItems: { xs: 'center', sm: 'flex-end' } }}>
+          <Typography
+            variant="body2"
+            sx={{ mb: { xs: 1, sm: 0 }, color: '#b0bec5', fontSize: '0.875rem' }}
+          >
+            Follow us on
+          </Typography>
+          <Box sx={{ display: 'flex', justifyContent: { xs: 'center', sm: 'flex-end' }, marginLeft:"8px" }}>
+            <Link
+              href="#"
+              sx={{
+                color: '#7b8aAB',
+                '&:hover': { color: '#fff' },
+                mx: 0.75,
+              }}
+            >
+              <i className="fab fa-linkedin-in" style={{ fontSize: '18px' }}></i>
+            </Link>
+            <Link
+              href="#"
+              sx={{
+                color: '#7b8aAB',
+                '&:hover': { color: '#fff' },
+                mx: 0.75,
+              }}
+            >
+              <i className="fab fa-twitter" style={{ fontSize: '18px' }}></i>
+            </Link>
+            <Link
+              href="#"
+              sx={{
+                color: '#7b8aAB',
+                '&:hover': { color: '#fff' },
+                mx: 0.75,
+              }}
+            >
+              <i className="fab fa-facebook-f" style={{ fontSize: '18px' }}></i>
+            </Link>
+          </Box>
+        </Box>
+      </Box>
+      <Typography
+        variant="body2"
+        sx={{
+          textAlign: 'center',
+          color: '#7b8aAB',
+          fontSize: '0.8rem',
+          py: 1,
+        }}
+      >
+        © Copyright 2008-2025 PBPay.com. All Rights Reserved.
+      </Typography>
+    </Container>
+  </Box>
+
+
+
+    </Root>
+  );
+}
