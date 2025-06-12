@@ -11,3 +11,11 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+.css-18icpvn{
+  background-color: black;
+  width: 100%;
+  max-width: 1200px;
+  padding:0;
+  margin:0;
+}

@@ -40,7 +40,6 @@ const MotionDialogContent = styled(motion.div)(({ theme }) => ({
   flexDirection: 'column',
   alignItems: 'center',
   justifyContent: 'center',
-  padding: theme.spacing(4),
   backgroundColor: 'transparent',
 }));
 const Root = styled(Box, {
@@ -109,7 +108,7 @@ const ProductContainer = styled(Box)(({ theme }) => ({
   padding: theme.spacing(4),
   gap: theme.spacing(4),
   flexWrap: 'wrap',
-  maxWidth: 1500,
+  maxWidth: 1700,
   width: '100%',
   marginTop: '30px',
   boxSizing: 'border-box',
@@ -123,20 +122,19 @@ const ImageWrapper = styled(Box)({
   width: 'auto',
   height: 'auto',
   borderRadius: 12,
-  overflow: 'hidden',
+  overflow: 'auto',
   justifyContent: 'center',
   alignItems: 'center',
 });
-const PaymentIframe = styled('iframe')(({ theme }) => ({
+const PaymentIframe = styled('iframe')({
   width: '100%',
-  height: '600px',
+  maxWidth: '1200px',
+  margin: '0 auto',
+  height: '100%',
   border: 'none',
   borderRadius: 12,
-  marginTop: theme.spacing(4),
-  [theme.breakpoints.down('sm')]: {
-    height: '400px',
-  },
-}));
+  scale:0.85,
+});
 
 const MainImage = styled(motion.img)({
   width: '300px',
@@ -152,9 +150,12 @@ const MainImage = styled(motion.img)({
 // Main Component
 export default function PaymentDemo() {
   const images = [foodImage, foodImage2, foodImage3];
-  const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const [paymentUrl, setPaymentUrl] = useState(null);
+  const [dialogAnimationComplete, setDialogAnimationComplete] = useState(false);
+  const [error, setError] = useState(null);
+  const [showIframeContent, setShowIframeContent] = useState(false);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
   
 
   useEffect(() => {
@@ -166,39 +167,72 @@ export default function PaymentDemo() {
 
   const handlePayClick = async () => {
     setIsLoading(true);
+    setDialogAnimationComplete(false);
+    setShowIframeContent(false);
+    setPaymentUrl(null);
+    console.log('handlePayClick started');
+  
     try {
-      // Default form data (same as PaymentForm.js defaults)
       const formData = {
-        merchantId: 'merchantIdWeb',
-        orderId: '', // Will be generated in processPayment
+        merchantId: 'testMerchant',
+        orderId: '',
         emailId: 'test@test.com',
-        mobileNumber: '9012145679',
-        amount: 100, // Changed to match the ₹1.00 price in the UI
-        customerFirstName: 'Shrey',
-        customerLastName: 'Seth',
+        mobileNumber: '9012345678',
+        amount: 100,
+        customerFirstName: 'Shreya',
+        customerLastName: 'Sethi',
         customerIP: '',
         currency: 'INR',
         additionalFields: {},
         udfParams: {},
         userAgent: '',
-        callbackUrl: 'https://qapaymentcallback.pbpay.com/success/url',
+        callbackUrl: 'https://qapay.in/success/urls',
       };
-
-      // Simulate the payment process with a 5-second delay
-      await new Promise((resolve) => setTimeout(resolve, 5000));
-      const response = await processPayment(formData);
-      setPaymentUrl(response.url);
-      console.log('Payment response:', response);
-      // Optionally, redirect or show success message
-      //alert('Payment processed successfully!');
+  
+      console.log('formData:', formData);
+  
+      // Start a 5-second timer for the content switch
+      const contentTimer = new Promise((resolve) => setTimeout(resolve, 5000));
+  
+      // Process payment concurrently
+      const paymentPromise = processPayment(formData).catch((err) => {
+        console.error('processPayment error:', err);
+        throw err;
+      });
+  
+      // Wait for animation to complete with a 2-second fallback
+      const waitForAnimation = new Promise((resolve) => {
+        const startTime = Date.now();
+        const checkAnimation = setInterval(() => {
+          if (dialogAnimationComplete || Date.now() - startTime >= 2000) {
+            clearInterval(checkAnimation);
+            console.log('Animation promise resolved:', { dialogAnimationComplete, elapsed: Date.now() - startTime });
+            resolve();
+          }
+        }, 50);
+      });
+  
+      // Wait for content timer and animation
+      await Promise.all([contentTimer, waitForAnimation]);
+  
+      // Get payment response
+      const response = await paymentPromise;
+      console.log('processPayment response:', JSON.stringify(response, null, 2));
+  
+      if (response && response.url) {
+        console.log('Setting paymentUrl:', response.url);
+        setPaymentUrl(response.url);
+        setShowIframeContent(true);
+      } else {
+        console.error('Invalid response:', response);
+        throw new Error('No URL found in response');
+      }
     } catch (error) {
-      console.error('Payment failed:', error);
-      alert('Payment failed. Please try again.');
-    } finally {
-      setIsLoading(false);
+      console.error('Payment failed:', error.message);
+      setError('Payment failed. Please try again.');
+      setIsLoading(false); // Close pop-up on error
     }
   };
-
   return (
     <Root isBlurred={isLoading}>
       <Header>
@@ -219,84 +253,146 @@ export default function PaymentDemo() {
         <SignInButton variant="contained">Sign In</SignInButton>
       </Header>
 
-      <BlurredContainer isBlurred={isLoading}>
-  <ProductContainer>
-    {!paymentUrl ? (
-      <>
-        <Box display="flex" flexDirection="column" alignItems="center">
-          <ImageWrapper>
-            <AnimatePresence mode="wait">
-              <MainImage
-                key={currentImageIndex}
-                src={images[currentImageIndex]}
-                alt="Product"
-                initial={{ opacity: 0, x: 100 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -100 }}
-                transition={{ duration: 0.5 }}
-              />
-            </AnimatePresence>
-          </ImageWrapper>
-          <Stack direction="row" spacing={1} mt={2}>
-            {images.map((_, index) => (
-              <Box
-                key={index}
-                role="button"
-                tabIndex={0}
-                aria-label={`Show image ${index + 1}`}
-                onClick={() => setCurrentImageIndex(index)}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter' || e.key === ' ') {
-                    setCurrentImageIndex(index);
-                  }
-                }}
-                sx={{
-                  width: 9,
-                  height: 9,
-                  borderRadius: '50%',
-                  backgroundColor: index === currentImageIndex ? '#1976d2' : '#90caf9',
-                  cursor: 'pointer',
-                }}
-              />
-            ))}
-          </Stack>
-        </Box>
-        <Box flex={1} minWidth={300} display="flex" flexDirection="column">
-          <Typography variant="h5" fontWeight="bold">Delicious Meal</Typography>
-          <Rating value={4} readOnly />
-          <Typography variant="h6" sx={{ mt: 2 }}>₹1.00</Typography>
-          <Typography fontSize={14} mt={3}>
-            PBpay offers a seamless, secure payment experience with multiple options including Credit/Debit Cards, UPI, Net Banking, and more. Our smooth checkout ensures quick payments and instant confirmations.
-          </Typography>
-          <Button
-            variant="contained"
-            size="large"
-            sx={{
-              alignSelf: 'flex-start',
-              mt: 4,
-              '&:hover': { backgroundColor: '#115293' },
-            }}
-            onClick={handlePayClick}
-            disabled={isLoading}
-          >
-            PAY WITH PBPAY
-          </Button>
-        </Box>
-      </>
-    ) : (
-      <PaymentIframe src={paymentUrl} title="Payment Gateway" />
-    )}
+      <BlurredContainer isBlurred={isLoading && !showIframeContent}>
+  <ProductContainer sx={{ position: 'relative', minHeight: '600px' }}>
+    <Box display="flex" flexDirection={{ xs: 'column', sm: 'row' }} alignItems="center" gap={4}>
+      <Box display="flex" flexDirection="column" alignItems="center">
+        <ImageWrapper>
+          <AnimatePresence mode="wait">
+            <MainImage
+              key={currentImageIndex}
+              src={images[currentImageIndex]}
+              alt="Product"
+              initial={{ opacity: 0, x: 100 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -100 }}
+              transition={{ duration: 0.5 }}
+            />
+          </AnimatePresence>
+        </ImageWrapper>
+        <Stack direction="row" spacing={1} mt={2}>
+          {images.map((_, index) => (
+            <Box
+              key={index}
+              role="button"
+              tabIndex={0}
+              aria-label={`Show image ${index + 1}`}
+              onClick={() => setCurrentImageIndex(index)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  setCurrentImageIndex(index);
+                }}}
+              sx={{
+                width: 9,
+                height: 9,
+                borderRadius: '50%',
+                backgroundColor: index === currentImageIndex ? '#1976d2' : '#90caf9',
+                cursor: 'pointer',
+              }}
+            />
+          ))}
+        </Stack>
+      </Box>
+      <Box flex={1} minWidth={300} display="flex" flexDirection="column">
+        <Typography variant="h5" fontWeight="bold">Delicious Meal</Typography>
+        <Rating value={4} readOnly />
+        <Typography variant="h6" sx={{ mt: 2 }}>₹1.00</Typography>
+        <Typography fontSize={14} mt={3}>
+          PBpay offers a seamless, secure payment experience with multiple options including Credit/Debit Cards, UPI, Net Banking, and more. Our smooth checkout ensures quick payments and instant confirmations.
+        </Typography>
+        <Button
+          variant="contained"
+          size="large"
+          sx={{
+            alignSelf: 'flex-start',
+            mt: 4,
+            '&:hover': { backgroundColor: '#115293' },
+          }}
+          onClick={handlePayClick}
+          disabled={isLoading}
+        >
+          PAY WITH PBPAY
+        </Button>
+      </Box>
+    </Box>
   </ProductContainer>
 </BlurredContainer>
+<Dialog
+  open={isLoading}
+  aria-labelledby="loading-dialog-title"
+  aria-busy={isLoading && !showIframeContent}
+  sx={{
+    '& .MuiDialog-paper': {
+      backgroundColor: 'transparent',
+      boxShadow: 'none',
+      minWidth: '1000px',
+      maxWidth: '1500px',
+      width: '100%',
+      height: '800px',
+      borderRadius: 2,
+      overflow: 'hidden',
+    },
+  }}
+>
+  <MotionDialogContent
+    initial={{ opacity: 0, scale: 0.6 }}
+    animate={{
+      opacity: 1,
+      scale: 1,
+      transition: { duration: 1, ease: 'easeInOut' },
+    }}
+    onAnimationComplete={(definition) => {
+      console.log('Dialog animation complete:', definition);
+      setDialogAnimationComplete(true);
+    }}
+    sx={{
+      width: '100%',
+      height: '100%',
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'center',
+      justifyContent: 'center',
+      backgroundColor: 'background.paper',
+      borderRadius: 2,
+      boxShadow: 24,
+      p: 4,
+      overflow: 'hidden',
+    }}
+  >
+    <AnimatePresence mode="wait">
+      {!showIframeContent ? (
+        <motion.div
+          key="loading"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 1 }}
+          transition={{ duration: 0.3 }}
+          style={{ textAlign: 'center' }}
+        >
+          <CircularProgress size={40} sx={{ mb: 2 }} />
+          <Typography variant="h6" id="loading-dialog-title">
+            Your request is being processed
+          </Typography>
+        </motion.div>
+      ) : (
+        <motion.div
+          key="iframe"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.3 }}
+          style={{ width: '100%', height: '100%' }}
+        >
+          <PaymentIframe
+            src={paymentUrl}
+            title="Payment Gateway"
+            style={{ width: '100%', height: '100%', border: 'none' }}
+          />
+        </motion.div>
+      )}
+    </AnimatePresence>
+  </MotionDialogContent>
+</Dialog>
 
-<LoadingDialog open={isLoading} aria-labelledby="loading-dialog-title">
-  <DialogContent sx={{ textAlign: 'center' }}>
-    <CircularProgress size={40} sx={{ mb: 2 }} />
-    <Typography variant="h6" id="loading-dialog-title">
-      Your request is being processed
-    </Typography>
-  </DialogContent>
-</LoadingDialog>
 
       {/* Footer remains unchanged */}
       <Box
