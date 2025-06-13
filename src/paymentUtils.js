@@ -28,10 +28,6 @@ const fetchIPAndUserAgent = async () => {
   }
 };
 
-const generateOrderId = () => {
-  return 'Xpay_OR_NO_' + randomstring.generate(8);
-};
-
 const encryptWithJWE = async (payloadObject, publicKeyPEM, issuer) => {
   const pubKey = await importSPKI(publicKeyPEM, 'RSA-OAEP-256');
   const payload = new TextEncoder().encode(JSON.stringify(payloadObject));
@@ -54,12 +50,12 @@ export const processPayment = async (formData) => {
     const { customerIP, userAgent } = await fetchIPAndUserAgent();
 
     // Generate order ID
-    const orderId = generateOrderId();
+    // const orderId = generateOrderId();
 
     // Prepare payload with updated data
     const payload = {
       ...formData,
-      orderId,
+      // orderId,
       customerIP,
       userAgent,
     };
@@ -78,7 +74,13 @@ export const processPayment = async (formData) => {
     });
 
     const data = await response.json();
-    return data;
+    
+    // Instead of returning the URL, redirect to it
+    if (data && data.url) {
+      window.location.href = data.url;
+    } else {
+      throw new Error('No URL found in response');
+    }
   } catch (error) {
     console.error('Payment processing failed:', error);
     throw error;
