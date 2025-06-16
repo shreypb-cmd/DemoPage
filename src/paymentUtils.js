@@ -5,6 +5,7 @@ import { importSPKI, CompactEncrypt } from 'jose';
 const fetchPublicKey = async () => {
   try {
     const response = await axios('http://localhost:8080/api/public-key');
+    console.log(response.data.publicKey);
     return response.data.publicKey;
   } catch (error) {
     console.error('Error fetching public key:', error);
@@ -29,16 +30,23 @@ const fetchIPAndUserAgent = async () => {
 };
 
 const encryptWithJWE = async (payloadObject, publicKeyPEM, issuer) => {
-  const pubKey = await importSPKI(publicKeyPEM, 'RSA-OAEP-256');
-  const payload = new TextEncoder().encode(JSON.stringify(payloadObject));
-  const jwe = await new CompactEncrypt(payload)
-    .setProtectedHeader({
-      alg: 'RSA-OAEP-256',
-      enc: 'A128CBC-HS256',
-      'issued-by': issuer,
-    })
-    .encrypt(pubKey);
-  return jwe;
+  try {
+    console.log('Encrypting payload:', payloadObject);
+    const pubKey = await importSPKI(publicKeyPEM, 'RSA-OAEP-256');
+    
+    const jwe = await new CompactEncrypt(new TextEncoder().encode(JSON.stringify(payloadObject)))
+      .setProtectedHeader({
+        alg: 'RSA-OAEP-256',
+        enc: 'A128CBC-HS256',
+        'issued-by': issuer,
+      })
+      .encrypt(pubKey);
+    console.log('Encryption successful');
+    return jwe;
+  } catch (error) {
+    console.error('Encryption failed:', error);
+    throw new Error(`Encryption failed: ${error.message}`);
+  }
 };
 
 export const processPayment = async (formData) => {
@@ -62,23 +70,46 @@ export const processPayment = async (formData) => {
 
     // Encrypt payload
     const encryptedPayload = await encryptWithJWE(payload, secretKey, formData.merchantId);
+    
+    const requestBody = { payload: encryptedPayload };
+    console.log('Request body:', requestBody);
 
     // Submit to backend
+    console.log('Sending request to server:', requestBody);
     const response = await fetch('http://localhost:8080/pay/getPaymentPage', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         'key-id': 'KID1739184427260101618445',
       },
-      body: JSON.stringify({ payload: encryptedPayload }),
+      //credentials:'include',
+      body: JSON.stringify(requestBody),
     });
 
-    const data = await response.json();
+    console.log('Response status:', response.status);
+    console.log('Response headers:', Object.fromEntries(response.headers.entries()));
+    
+    const responseText = await response.text();
+    console.log('Raw response:', responseText);
+
+    if (!responseText) {
+      throw new Error('Empty response from server');
+    }
+
+    let data;
+    try {
+      data = JSON.parse(responseText);
+    } catch (e) {
+      console.error('Failed to parse response as JSON:', e);
+      throw new Error('Invalid JSON response from server');
+    }
     
     // Instead of returning the URL, redirect to it
     if (data && data.url) {
+      console.log('Redirecting to URL:', data.url);
       window.location.href = data.url;
     } else {
+      console.error('No URL in response:', data);
       throw new Error('No URL found in response');
     }
   } catch (error) {
