@@ -163,11 +163,10 @@ export default function PaymentDemo() {
   const [error, setError] = useState(null);
   const [showSuccessPopup, setShowSuccessPopup] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
-  const queryParams = new URLSearchParams(window.location.search);
-  const paymentId = queryParams.get('paymentId');
-  const txnStatus = queryParams.get('txnStatus');
-  const amount = queryParams.get('amount');
-  const paymentMode = queryParams.get('paymentMode');
+  const [paymentId, setPaymentId] = useState(null);
+  const [txnStatus, setTxnStatus] = useState(null);
+  const [amount, setAmount] = useState(null);
+  const [paymentMode, setPaymentMode] = useState(null);
   const generateOrderId = () => {
     const randomNum = Math.floor(10000 + Math.random() * 90000); // Generates a random 5-digit number
     return `PBPAY${randomNum}`;
@@ -181,10 +180,53 @@ export default function PaymentDemo() {
   }, [images.length]);
 
   useEffect(() => {
-    if (paymentId && txnStatus === 'TXN_SUCCESS' && amount && paymentMode) {
-      setShowSuccessPopup(true);  
+    console.log('Current URL:', window.location.href);
+    console.log('URL search string:', window.location.search);
+    
+    const urlParams = new URLSearchParams(window.location.search);
+    console.log('URLSearchParams object:', urlParams);
+    
+    const encodedPaymentId = urlParams.get('paymentId');
+    const encodedTxnStatus = urlParams.get('txnStatus');
+    const encodedAmount = urlParams.get('amount');
+    const encodedPaymentMode = urlParams.get('paymentMode');
+
+    // Log encoded values
+    console.log('Encoded values:');
+    console.log('paymentId:', encodedPaymentId);
+    console.log('txnStatus:', encodedTxnStatus);
+    console.log('amount:', encodedAmount);
+    console.log('paymentMode:', encodedPaymentMode);
+
+    // Decode the URL-encoded parameters
+    const decodedPaymentId = encodedPaymentId ? decodeURIComponent(encodedPaymentId) : null;
+    const decodedTxnStatus = encodedTxnStatus ? decodeURIComponent(encodedTxnStatus) : null;
+    const decodedAmount = encodedAmount ? decodeURIComponent(encodedAmount) : null;
+    const decodedPaymentMode = encodedPaymentMode ? decodeURIComponent(encodedPaymentMode) : null;
+
+    // Log decoded values
+    console.log('Decoded values:');
+    console.log('paymentId:', decodedPaymentId);
+    console.log('txnStatus:', decodedTxnStatus);
+    console.log('amount:', decodedAmount);
+    console.log('paymentMode:', decodedPaymentMode);
+
+    // Check if decoding made any difference
+    console.log('Decoding comparison:');
+    console.log('paymentId same?', encodedPaymentId === decodedPaymentId);
+    console.log('txnStatus same?', encodedTxnStatus === decodedTxnStatus);
+    console.log('amount same?', encodedAmount === decodedAmount);
+    console.log('paymentMode same?', encodedPaymentMode === decodedPaymentMode);
+
+    setPaymentId(decodedPaymentId);
+    setTxnStatus(decodedTxnStatus);
+    setAmount(decodedAmount);
+    setPaymentMode(decodedPaymentMode);
+
+    if (decodedPaymentId && decodedTxnStatus === 'TXN_SUCCESS' && decodedAmount && decodedPaymentMode) {
+      setShowSuccessPopup(true);
     }
-  }, [paymentId, txnStatus, amount, paymentMode]);
+  }, []);
 
   useEffect(() => {
     // Check if we're on the status response page
@@ -213,7 +255,7 @@ export default function PaymentDemo() {
         orderId: generateOrderId(),
         emailId: 'test@test.com',
         mobileNumber: '9012345678',
-        amount: 100000,
+        amount: 100,
         customerFirstName: 'Shrey',
         customerLastName: 'Seth',
         customerIP: '',
@@ -318,7 +360,7 @@ export default function PaymentDemo() {
             >
               <Typography variant="h5" fontWeight="bold" sx={{ mb: 1 }}>Delicious Meal</Typography>
               <Rating value={4} readOnly sx={{ mb: 2 }} />
-              <Typography variant="h6" sx={{ mb: 2 }}>₹1000.00</Typography>
+              <Typography variant="h6" sx={{ mb: 2 }}>₹1.00</Typography>
               <Typography
                 fontSize={14}
                 sx={{
@@ -432,7 +474,29 @@ export default function PaymentDemo() {
             exit={{ opacity: 0, scale: 0.8 }}
             transition={{ duration: 0.3 }}
           >
-            <Box sx={{ textAlign: 'center', p: 4 }}>
+            <Box sx={{ textAlign: 'center', p: 4, position: 'relative' }}>
+              {/* Close button */}
+              <Button
+                onClick={() => setShowSuccessPopup(false)}
+                sx={{
+                  position: 'absolute',
+                  top: 8,
+                  right: 8,
+                  minWidth: 'auto',
+                  width: 32,
+                  height: 32,
+                  borderRadius: '50%',
+                  backgroundColor: '#f5f5f5',
+                  color: '#666',
+                  '&:hover': {
+                    backgroundColor: '#e0e0e0',
+                    color: '#333',
+                  },
+                }}
+              >
+                <i className="fas fa-times" style={{ fontSize: '14px' }}></i>
+              </Button>
+              
               <Box
                 sx={{
                   display: 'flex',
@@ -476,7 +540,6 @@ export default function PaymentDemo() {
                 sx={{
                   mb: 3,
                   color: '#546e7a',
-                  textTransform: 'uppercase',
                 }}
               >
                 Payment Mode: {paymentMode}
@@ -491,20 +554,6 @@ export default function PaymentDemo() {
               >
                 Your payment has been processed successfully.
               </Typography>
-              <Button
-                variant="contained"
-                onClick={() => {
-                  setShowSuccessPopup(false);
-                  window.location.href = '/';
-                }}
-                sx={{
-                  py: 1,
-                  px: 4,
-                  '&:hover': { backgroundColor: '#115293' },
-                }}
-              >
-                Back to Home
-              </Button>
             </Box>
           </MotionDialogContent>
         </LoadingDialog>
