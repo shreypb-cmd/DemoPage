@@ -385,7 +385,7 @@ export default function PaymentDemo() {
         <SignInButton variant="contained">Sign In</SignInButton>
       </Header>
 
-      <ContentContainer isBlurred={isRedirecting || isLoading|| showSuccessPopup}>
+      <ContentContainer isBlurred={isRedirecting || isLoading || showSuccessPopup || (txnStatus && txnStatus !== 'TXN_SUCCESS')}>
         <ProductContainer>
           <Box
             display="flex"
