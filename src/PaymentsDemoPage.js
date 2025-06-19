@@ -33,6 +33,9 @@ const LoadingDialog = styled(Dialog)(({ theme }) => ({
     boxShadow: '0 4px 20px rgba(0, 0, 0, 0.2)',
     margin: 0,
     maxWidth: 'none',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 }));
 const MotionDialogContent = styled(motion.div)(({ theme }) => ({
@@ -130,7 +133,7 @@ const ImageWrapper = styled(Box)({
   width: 'auto',
   height: 'auto',
   borderRadius: 12,
-  overflow: 'auto',
+  overflow: 'hidden',
   justifyContent: 'center',
   alignItems: 'center',
 });
@@ -154,6 +157,94 @@ const MainImage = styled(motion.img)({
     height: '150px',
   },
 });
+
+// TransactionPopup component for both success and failure
+function TransactionPopup({ open, onClose, icon, iconBg, iconColor, heading, headingColor, amount, paymentMode, message }) {
+  return (
+    <LoadingDialog open={open} onClose={onClose}>
+      <Box sx={{ textAlign: 'center', p: 4, position: 'relative', width: 360, maxWidth: '90vw', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', backgroundColor: 'transparent' }}>
+        {/* Close button */}
+        <Button
+          onClick={onClose}
+          sx={{
+            position: 'absolute',
+            top: 8,
+            right: 8,
+            minWidth: 'auto',
+            width: 32,
+            height: 32,
+            borderRadius: '50%',
+            backgroundColor: '#f5f5f5',
+            color: '#666',
+            '&:hover': {
+              backgroundColor: '#e0e0e0',
+              color: '#333',
+            },
+          }}
+        >
+          <i className="fas fa-times" style={{ fontSize: '14px' }}></i>
+        </Button>
+        <Box
+          sx={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: 60,
+            height: 60,
+            borderRadius: '50%',
+            backgroundColor: iconBg,
+            mb: 2,
+            mx: 'auto',
+          }}
+        >
+          <i
+            className={icon}
+            style={{ fontSize: '30px', color: iconColor }}
+          ></i>
+        </Box>
+        <Typography
+          variant="h5"
+          sx={{
+            mb: 1,
+            fontWeight: 600,
+            color: headingColor,
+          }}
+        >
+          {heading}
+        </Typography>
+        <Typography
+          variant="h6"
+          sx={{
+            mb: 1,
+            color: headingColor,
+            fontWeight: 500,
+          }}
+        >
+          Amount: ₹{(amount/100).toFixed(2)}
+        </Typography>
+        <Typography
+          variant="subtitle1"
+          sx={{
+            mb: 3,
+            color: '#546e7a',
+          }}
+        >
+          Payment Mode: {paymentMode}
+        </Typography>
+        <Typography
+          variant="body1"
+          sx={{
+            mb: 3,
+            color: '#546e7a',
+            lineHeight: 1.6,
+          }}
+        >
+          {message}
+        </Typography>
+      </Box>
+    </LoadingDialog>
+  );
+}
 
 // Main Component
 export default function PaymentDemo() {
@@ -466,97 +557,29 @@ export default function PaymentDemo() {
           </Box>
         </Box>
       )}
-      {showSuccessPopup && (
-        <LoadingDialog open={showSuccessPopup} onClose={() => setShowSuccessPopup(false)}>
-          <MotionDialogContent
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.8 }}
-            transition={{ duration: 0.3 }}
-          >
-            <Box sx={{ textAlign: 'center', p: 4, position: 'relative' }}>
-              {/* Close button */}
-              <Button
-                onClick={() => setShowSuccessPopup(false)}
-                sx={{
-                  position: 'absolute',
-                  top: 8,
-                  right: 8,
-                  minWidth: 'auto',
-                  width: 32,
-                  height: 32,
-                  borderRadius: '50%',
-                  backgroundColor: '#f5f5f5',
-                  color: '#666',
-                  '&:hover': {
-                    backgroundColor: '#e0e0e0',
-                    color: '#333',
-                  },
-                }}
-              >
-                <i className="fas fa-times" style={{ fontSize: '14px' }}></i>
-              </Button>
-              
-              <Box
-                sx={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  width: 60,
-                  height: 60,
-                  borderRadius: '50%',
-                  backgroundColor: '#4caf50',
-                  mb: 2,
-                  mx: 'auto',
-                }}
-              >
-                <i
-                  className="fas fa-check"
-                  style={{ fontSize: '30px', color: '#fff' }}
-                ></i>
-              </Box>
-              <Typography
-                variant="h5"
-                sx={{
-                  mb: 1,
-                  fontWeight: 600,
-                  color: '#1a237e',
-                }}
-              >
-                Payment Successful!
-              </Typography>
-              <Typography
-                variant="h6"
-                sx={{
-                  mb: 1,
-                  color: '#2e7d32',
-                  fontWeight: 500,
-                }}
-              >
-                Amount: ₹{(amount/100).toFixed(2)}
-              </Typography>
-              <Typography
-                variant="subtitle1"
-                sx={{
-                  mb: 3,
-                  color: '#546e7a',
-                }}
-              >
-                Payment Mode: {paymentMode}
-              </Typography>
-              <Typography
-                variant="body1"
-                sx={{
-                  mb: 3,
-                  color: '#546e7a',
-                  lineHeight: 1.6,
-                }}
-              >
-                Your payment has been processed successfully.
-              </Typography>
-            </Box>
-          </MotionDialogContent>
-        </LoadingDialog>
+      {/* Unified Transaction Popup */}
+      {((showSuccessPopup && txnStatus === 'TXN_SUCCESS') || (txnStatus && txnStatus !== 'TXN_SUCCESS')) && (
+        <TransactionPopup
+          open={showSuccessPopup && txnStatus === 'TXN_SUCCESS' ? true : txnStatus && txnStatus !== 'TXN_SUCCESS'}
+          onClose={() => {
+            if (txnStatus === 'TXN_SUCCESS') setShowSuccessPopup(false);
+            else setTxnStatus(null);
+          }}
+          icon={txnStatus === 'TXN_SUCCESS' ? 'fas fa-check' : 'fas fa-times'}
+          iconBg={txnStatus === 'TXN_SUCCESS' ? '#4caf50' : '#e53935'}
+          iconColor="#fff"
+          heading={txnStatus === 'TXN_SUCCESS' ? 'Payment Successful!' : 'Payment Failed'}
+          headingColor={txnStatus === 'TXN_SUCCESS' ? '#1a237e' : '#b71c1c'}
+          amount={amount}
+          paymentMode={paymentMode}
+          message={
+            txnStatus === 'TXN_SUCCESS'
+              ? 'Your payment has been processed successfully.'
+              : txnStatus
+                ? `Transaction Status: ${txnStatus}`
+                : 'Your payment could not be processed. Please try again.'
+          }
+        />
       )}
 
       {isLoading && (
