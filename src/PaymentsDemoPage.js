@@ -3,7 +3,7 @@ import { Box, Typography, Button, Rating, Stack, Dialog, DialogContent, Divider,
 import { styled } from '@mui/material/styles';
 import { motion, AnimatePresence } from 'framer-motion';
 import '@fortawesome/fontawesome-free/css/all.min.css';
-import { processPayment } from './paymentUtils'; // Import the shared utility
+import { processPayment } from './paymentUtils'; 
 
 import pic from './pictures/PCI.png';
 import logo from './pictures/Layer_1.svg';
@@ -312,7 +312,15 @@ export default function PaymentDemo() {
     setPaymentId(decodedPaymentId);
     setTxnStatus(decodedTxnStatus);
     setAmount(decodedAmount);
-    setPaymentMode(decodedPaymentMode);
+    if(decodedPaymentMode==="CC"){
+      setPaymentMode("Credit Card");
+    }
+    else if(decodedPaymentMode==="DC"){
+      setPaymentMode("Debit Card");
+    }
+    else{
+      setPaymentMode(decodedPaymentMode);
+    }
 
     if (decodedPaymentId && decodedTxnStatus === 'TXN_SUCCESS' && decodedAmount && decodedPaymentMode) {
       setShowSuccessPopup(true);
